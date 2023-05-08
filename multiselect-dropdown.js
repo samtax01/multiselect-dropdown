@@ -75,6 +75,12 @@ style.innerHTML = `
   width: 1.15em;
   margin-right: 0.35em;  
 }
+
+/* Disabled Item */
+.multiselect-dropdown-list div.disabled{
+    color: #ccc
+}
+
 .multiselect-dropdown-list div.checked{
 }
 .multiselect-dropdown-list div:hover{
@@ -157,20 +163,26 @@ function MultiselectDropdown(options){
       }
 
       Array.from(el.options).map(o=>{
-        var op=newEl('div',{class:o.selected?'checked':'',optEl:o})
-        var ic=newEl('input',{type:'checkbox',checked:o.selected});
+        var op=newEl('div',{class: [
+            o.selected?'checked':'',
+            o.disabled?'disabled':'', // disable component
+        ], optEl:o})
+        var ic=newEl('input',{type:'checkbox', checked:o.selected, disabled: o.disabled });
         op.appendChild(ic);
         op.appendChild(newEl('label',{text:o.text}));
 
-        op.addEventListener('click',()=>{
-          op.classList.toggle('checked');
-          op.querySelector("input").checked=!op.querySelector("input").checked;
-          op.optEl.selected=!!!op.optEl.selected;
-          el.dispatchEvent(new Event('change'));
-        });
-        ic.addEventListener('click',(ev)=>{
-          ic.checked=!ic.checked;
-        });
+        if(!o.disabled){
+          op.addEventListener('click',()=>{
+            op.classList.toggle('checked');
+            op.querySelector("input").checked=!op.querySelector("input").checked;
+            op.optEl.selected=!!!op.optEl.selected;
+            el.dispatchEvent(new Event('change'));
+          });
+          ic.addEventListener('click',(ev)=>{
+            ic.checked=!ic.checked;
+          });
+        }
+
         o.listitemEl=op;
         list.appendChild(op);
       });
